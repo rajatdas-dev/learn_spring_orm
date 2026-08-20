@@ -1,4 +1,4 @@
-# Spring ORM — Spring Boot & PostgreSQL
+# 🛒 ShopSphere — Spring ORM Mastery Project
 
 A practical Spring Boot project designed to learn and implement **Spring ORM (Object Relational Mapping)** using **Hibernate/JPA** with **PostgreSQL**.
 
@@ -6,9 +6,9 @@ This project focuses on understanding how Java objects are mapped to relational 
 
 ---
 
-## 📌 Project Overview
+## 🎯 Project Overview
 
-This project demonstrates the complete flow:
+ShopSphere is a multi-vendor e-commerce and order management system designed specifically to make Spring ORM concepts practical. The project demonstrates the complete flow:
 
 ```text
 Client
@@ -24,7 +24,7 @@ JPA / Hibernate
 PostgreSQL
 ```
 
-The goal is not just to use JPA repositories, but to understand what actually happens between:
+The goal is not to build a simple CRUD application. The goal is to understand what actually happens between:
 
 ```text
 Java Object → Entity → Hibernate → SQL → PostgreSQL
@@ -93,7 +93,7 @@ PostgreSQL is used as the database.
 Example configuration:
 
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/life_os
+spring.datasource.url=jdbc:postgresql://localhost:5432/shopsphere
 spring.datasource.username=postgres
 spring.datasource.password=your_password
 
@@ -128,7 +128,7 @@ For production, blindly using `update` is not recommended. Schema migrations sho
 
 ---
 
-# 🧠 What is ORM?
+# 🧠 ORM Fundamentals
 
 ORM stands for:
 
@@ -209,6 +209,122 @@ Spring generates the implementation for us.
 
 ---
 
+# 🏪 ShopSphere Domain
+
+ShopSphere is a simplified **multi-vendor e-commerce and order management system**.
+
+The domain is intentionally designed to force meaningful ORM scenarios instead of isolated CRUD operations.
+
+## Core Modules
+
+```text
+User & Roles
+    ↓
+Vendors
+    ↓
+Categories → Products → Variants → Inventory
+    ↓
+Cart → Cart Items
+    ↓
+Orders → Order Items
+    ├── Payment
+    ├── Shipment
+    └── Order Status History
+    ↓
+Reviews / Wishlist / Coupons
+```
+
+### Main Entities
+
+```text
+User
+Address
+UserProfile
+Role
+
+Vendor
+VendorAddress
+
+Category
+Product
+ProductVariant
+ProductImage
+
+Inventory
+StockTransaction
+
+Cart
+CartItem
+
+Order
+OrderItem
+Payment
+Shipment
+OrderStatusHistory
+
+ProductReview
+Wishlist
+WishlistItem
+
+Coupon
+CouponUsage
+```
+
+## Important Relationships
+
+```text
+User
+ ├── Addresses             → One-to-Many
+ ├── Orders                → One-to-Many
+ ├── Reviews               → One-to-Many
+ ├── Roles                 → Many-to-Many
+ └── Profile               → One-to-One
+
+Vendor
+ └── Products              → One-to-Many
+
+Category
+ └── Products              → One-to-Many
+
+Product
+ ├── Vendor                → Many-to-One
+ ├── Category              → Many-to-One
+ ├── Variants              → One-to-Many
+ ├── Images                → One-to-Many
+ └── Reviews               → One-to-Many
+
+Order
+ ├── User                  → Many-to-One
+ ├── OrderItems            → One-to-Many
+ ├── Payment               → One-to-One
+ ├── Shipment              → One-to-One
+ └── StatusHistory         → One-to-Many
+
+Product ↔ Coupon            → Many-to-Many
+```
+
+## Why this project is suitable for ORM
+
+Each module creates a reason to study a different ORM problem:
+
+| Business Requirement | ORM Concept |
+|---|---|
+| User → Orders | One-to-Many / Many-to-One |
+| Order → OrderItems | Cascade / orphanRemoval |
+| Product → Category | Many-to-One |
+| User → Roles | Many-to-Many / Join Table |
+| Product → Variants | Collection mapping |
+| Order placement | Transactions |
+| Inventory reservation | Locking / concurrency |
+| Product listing | Pagination |
+| Order details | Lazy loading / fetch plans |
+| Order + items | N+1 / JOIN FETCH |
+| Product search | Specifications |
+| API responses | DTO projections |
+| Concurrent stock updates | Optimistic / pessimistic locking |
+
+---
+
 # 🏗️ Project Architecture
 
 The project follows a layered architecture:
@@ -226,57 +342,52 @@ src/main/java
 │
 ├── dto
 │
+├── mapper
+│
+├── specification
+│
 ├── exception
 │
 └── config
 ```
 
+```text
+Client
+  ↓
+Controller
+  ↓
+Service
+  ↓
+Repository / EntityManager
+  ↓
+JPA
+  ↓
+Hibernate
+  ↓
+JDBC
+  ↓
+PostgreSQL
+```
+
 ### Controller
 
-Responsible for handling HTTP requests.
-
-```text
-HTTP Request
-     ↓
-Controller
-```
+Responsible for HTTP requests and responses.
 
 ### Service
 
-Contains business logic.
-
-```text
-Controller
-    ↓
-Service
-```
+Contains business logic and defines appropriate transaction boundaries.
 
 ### Repository
 
-Communicates with the database.
-
-```text
-Service
-   ↓
-Repository
-   ↓
-JPA / Hibernate
-```
+Provides persistence operations through Spring Data JPA.
 
 ### Entity
 
-Represents a database table.
+Represents the persistence model.
 
-```java
-@Entity
-public class User {
+### DTO
 
-    @Id
-    @GeneratedValue
-    private Long id;
-
-}
-```
+Represents the API contract. Entities should not automatically be exposed directly from every REST endpoint.
 
 ---
 
@@ -948,42 +1059,450 @@ DTO Projection
 
 ---
 
-# 📖 Recommended Learning Order
+# 📚 Recommended Learning Order
 
-Follow this sequence while studying the project:
+Follow this order instead of jumping directly into annotations:
 
 ```text
 1. JDBC Basics
-       ↓
+      ↓
 2. ORM Fundamentals
-       ↓
-3. JPA
-       ↓
-4. Hibernate
-       ↓
+      ↓
+3. JPA Specification
+      ↓
+4. Hibernate Architecture
+      ↓
 5. Entity Mapping
-       ↓
-6. Relationships
-       ↓
-7. Persistence Context
-       ↓
-8. Entity Lifecycle
-       ↓
-9. Transactions
-       ↓
-10. Spring Data JPA
-       ↓
-11. JPQL
-       ↓
-12. Native Queries
-       ↓
-13. Fetch Strategies
-       ↓
-14. N+1 Problem
-       ↓
-15. Pagination
-       ↓
-16. Performance Optimization
+      ↓
+6. Primary Keys & PostgreSQL Sequences
+      ↓
+7. Relationships
+      ↓
+8. Owning Side & mappedBy
+      ↓
+9. Cascade & orphanRemoval
+      ↓
+10. Persistence Context
+      ↓
+11. Entity Lifecycle
+      ↓
+12. EntityManager
+      ↓
+13. Dirty Checking
+      ↓
+14. Flush
+      ↓
+15. Transactions
+      ↓
+16. Spring Data JPA
+      ↓
+17. Derived Queries
+      ↓
+18. JPQL
+      ↓
+19. Native Queries
+      ↓
+20. LAZY / EAGER
+      ↓
+21. N+1 Problem
+      ↓
+22. JOIN FETCH
+      ↓
+23. EntityGraph
+      ↓
+24. DTO Projections
+      ↓
+25. Pagination & Sorting
+      ↓
+26. Specifications / Criteria API
+      ↓
+27. Optimistic Locking
+      ↓
+28. Pessimistic Locking
+      ↓
+29. Transaction Isolation
+      ↓
+30. Auditing
+      ↓
+31. Database Indexing
+      ↓
+32. ORM Performance Optimization
+      ↓
+33. Integration Testing
+      ↓
+34. Production ORM Practices
+```
+
+---
+
+# 🧪 Deliberate ORM Experiments
+
+Do not only implement features. Reproduce ORM behavior intentionally.
+
+## Experiment 1 — First-Level Cache
+
+Load the same entity twice inside one persistence context and inspect SQL.
+
+## Experiment 2 — Dirty Checking
+
+Load an entity, modify it, do not call `save()`, and commit the transaction.
+
+Observe the generated `UPDATE`.
+
+## Experiment 3 — Detached Entity
+
+Detach an entity, modify it, then compare the behavior of the detached object with:
+
+```java
+entityManager.merge(entity);
+```
+
+## Experiment 4 — Lazy Loading
+
+Access a lazy association:
+
+```text
+Inside transaction
+vs
+Outside transaction
+```
+
+Observe why `LazyInitializationException` can occur.
+
+## Experiment 5 — N+1
+
+Load orders and access their items.
+
+Count the generated SQL queries, then fix the problem with:
+
+```text
+JOIN FETCH
+EntityGraph
+Batch Fetching
+DTO Projection
+```
+
+## Experiment 6 — Cascade
+
+Create an Order with OrderItems and compare behavior with different cascade configurations.
+
+## Experiment 7 — orphanRemoval
+
+Remove an OrderItem from an Order collection and inspect the SQL.
+
+## Experiment 8 — Optimistic Locking
+
+Run two concurrent updates against the same inventory row using:
+
+```java
+@Version
+private Long version;
+```
+
+Observe the version conflict.
+
+## Experiment 9 — Pessimistic Locking
+
+Reserve inventory concurrently using a database write lock and observe transaction blocking.
+
+---
+
+# 🔐 Concurrency Scenario
+
+Inventory is deliberately included because it exposes ORM behavior that a basic CRUD project never forces you to understand.
+
+Example:
+
+```text
+Stock = 1
+
+Customer A ──┐
+             ├── Purchase
+Customer B ──┘
+```
+
+Without proper concurrency handling, both requests can potentially read the same stock value.
+
+ShopSphere should demonstrate:
+
+```text
+Optimistic Locking
+        +
+Pessimistic Locking
+        +
+@Version
+        +
+Transaction Isolation
+        +
+Atomic Database Updates
+```
+
+---
+
+# 📈 ORM Performance Goals
+
+The project should intentionally reproduce and fix:
+
+```text
+N+1 Queries
+Unnecessary EAGER Loading
+Large Entity Graphs
+Unbounded Queries
+Repeated Entity Loading
+Missing Database Indexes
+Over-fetching
+Under-fetching
+```
+
+Solutions to understand:
+
+```text
+JOIN FETCH
+EntityGraph
+DTO Projections
+Batch Fetching
+Pagination
+Specifications
+Indexes
+Proper Transaction Boundaries
+```
+
+---
+
+# 🧪 Testing Strategy
+
+ORM behavior should be tested against a real PostgreSQL database.
+
+```text
+Unit Tests
+    ↓
+Repository Tests
+    ↓
+Service Integration Tests
+    ↓
+PostgreSQL Integration Tests
+    ↓
+Testcontainers
+```
+
+Important integration scenarios:
+
+```text
+Entity persistence
+Relationships
+Cascade
+orphanRemoval
+Rollback
+Dirty checking
+Lazy loading
+N+1 behavior
+Optimistic locking
+Pessimistic locking
+Pagination
+Dynamic queries
+```
+
+---
+
+# 🗺️ Development Phases
+
+## Phase 1 — Foundation
+
+Build:
+
+```text
+User
+Vendor
+Category
+Product
+```
+
+Learn:
+
+- Entity mapping
+- IDs
+- Columns
+- Sequences
+- Repositories
+- Basic queries
+
+## Phase 2 — Relationships
+
+Add:
+
+```text
+ProductVariant
+ProductImage
+Address
+UserProfile
+Role
+```
+
+Learn:
+
+- One-to-One
+- One-to-Many
+- Many-to-One
+- Many-to-Many
+- mappedBy
+- Join columns
+- Join tables
+- Cascade
+- orphanRemoval
+
+## Phase 3 — Persistence Context
+
+Pause feature development and focus on:
+
+```text
+EntityManager
+Persistence Context
+Entity Lifecycle
+Managed vs Detached
+First-Level Cache
+Dirty Checking
+Flush
+```
+
+## Phase 4 — Cart and Orders
+
+Build:
+
+```text
+Cart
+CartItem
+Order
+OrderItem
+Payment
+Shipment
+```
+
+Focus on:
+
+```text
+@Transactional
+Rollback
+Cascade
+Entity State
+Transaction Boundaries
+```
+
+## Phase 5 — Querying
+
+Implement:
+
+```text
+Derived Queries
+JPQL
+Native SQL
+Pagination
+Sorting
+DTO Projections
+Specifications
+```
+
+## Phase 6 — Performance
+
+Intentionally introduce:
+
+```text
+N+1
+EAGER loading
+Large object graphs
+Unbounded queries
+```
+
+Then fix them.
+
+## Phase 7 — Concurrency
+
+Use inventory to demonstrate:
+
+```text
+Optimistic Locking
+Pessimistic Locking
+Transaction Isolation
+Concurrent Updates
+Lost Updates
+```
+
+## Phase 8 — Production ORM Practices
+
+Add:
+
+```text
+Flyway
+Database Indexes
+Integration Tests
+Testcontainers
+Auditing
+Query Optimization
+SQL Logging
+```
+
+---
+
+# 🏆 ORM Mastery Checklist
+
+By the end of the project, you should be able to explain:
+
+```text
+□ ORM
+□ JPA vs Hibernate vs Spring Data JPA
+□ EntityManager
+□ EntityManagerFactory
+□ Persistence Context
+□ First-Level Cache
+□ Entity Lifecycle
+□ Transient / Managed / Detached / Removed
+□ persist()
+□ find()
+□ merge()
+□ remove()
+□ detach()
+□ clear()
+□ refresh()
+□ flush()
+□ Dirty Checking
+□ @Transactional
+□ Transaction Propagation
+□ Transaction Isolation
+□ Entity Mapping
+□ Primary Key Generation
+□ PostgreSQL Sequences
+□ @OneToOne
+□ @OneToMany
+□ @ManyToOne
+□ @ManyToMany
+□ @JoinColumn
+□ @JoinTable
+□ mappedBy
+□ Owning Side
+□ Cascade
+□ orphanRemoval
+□ LAZY
+□ EAGER
+□ LazyInitializationException
+□ Derived Queries
+□ JPQL
+□ Native SQL
+□ JOIN FETCH
+□ EntityGraph
+□ N+1 Problem
+□ Pagination
+□ Sorting
+□ DTO Projections
+□ Specifications
+□ Criteria API
+□ Optimistic Locking
+□ Pessimistic Locking
+□ @Version
+□ Auditing
+□ Database Indexing
+□ Hibernate SQL Generation
+□ Query Optimization
+□ Integration Testing
+□ Testcontainers
 ```
 
 ---
@@ -1001,7 +1520,7 @@ git clone <repository-url>
 Create the database:
 
 ```sql
-CREATE DATABASE life_os;
+CREATE DATABASE shopsphere;
 ```
 
 ## 3. Configure Credentials
@@ -1047,6 +1566,62 @@ After completing this project, you should be able to explain:
 > "How a REST request travels from the Controller to the Service, Repository, Hibernate, JDBC and finally PostgreSQL, and how Hibernate converts Java entity operations into SQL."
 
 You should also be comfortable explaining why a particular JPA annotation, relationship, transaction boundary, query strategy, or fetching strategy is being used instead of simply knowing the syntax.
+
+---
+
+# 🧠 Final Learning Objective
+
+At the end of ShopSphere, you should be able to explain this complete lifecycle:
+
+```text
+HTTP Request
+     ↓
+Controller
+     ↓
+Service
+     ↓
+@Transactional
+     ↓
+EntityManager / Repository
+     ↓
+Persistence Context
+     ↓
+Managed Entity
+     ↓
+Dirty Checking
+     ↓
+Flush
+     ↓
+Hibernate SQL Generation
+     ↓
+JDBC
+     ↓
+PostgreSQL
+     ↓
+Transaction Commit
+     ↓
+Database State
+```
+
+The real goal is to answer questions such as:
+
+> Why did Hibernate execute this SQL?
+
+> Why did it execute the SQL at this point?
+
+> Why did Hibernate issue one query instead of ten?
+
+> Why is this entity managed or detached?
+
+> Why did dirty checking update the database without calling `save()`?
+
+> Why did lazy loading fail?
+
+> Why did the transaction roll back?
+
+> Why did two concurrent inventory updates conflict?
+
+If you can answer those questions from the behavior of the application and generated SQL, you have moved beyond simply knowing JPA annotations and have started understanding Spring ORM.
 
 ---
 
