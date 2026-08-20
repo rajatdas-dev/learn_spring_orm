@@ -1,0 +1,20 @@
+package com.example.springmvc.exception;
+
+public enum ErrorCode {
+
+    VALIDATION_ERROR,
+     INVALID_REQUEST,
+    INTERNAL_SERVER_ERROR,
+
+    UNAUTHORIZED,
+    FORBIDDEN,
+    INVALID_CREDENTIALS,
+
+    USER_NOT_FOUND,
+
+    PRODUCT_NOT_FOUND,
+    PRODUCT_OUT_OF_STOCK,
+
+    ORDER_NOT_FOUND,
+    ORDER_STATE_ERROR,
+}

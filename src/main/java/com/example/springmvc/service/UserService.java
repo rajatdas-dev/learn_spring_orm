@@ -1,8 +1,10 @@
 package com.example.springmvc.service;
 
+import com.example.springmvc.dto.request.UserRequestDTO;
+import com.example.springmvc.dto.response.UserResponseDTO;
 import com.example.springmvc.entity.User;
 
 public interface UserService {
 
-    User createUser(User user);
+    UserResponseDTO createUser(UserRequestDTO requestDTO);
 }

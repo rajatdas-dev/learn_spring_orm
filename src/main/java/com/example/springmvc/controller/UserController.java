@@ -1,5 +1,7 @@
 package com.example.springmvc.controller;
 
+import com.example.springmvc.dto.request.UserRequestDTO;
+import com.example.springmvc.dto.response.UserResponseDTO;
 import com.example.springmvc.entity.User;
 import com.example.springmvc.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +19,8 @@ public class UserController {
     private UserServiceImpl userService;
 
     @PostMapping("/create")
-    public ResponseEntity<User> createUser(@RequestBody User user){
-      User savedUser =  userService.createUser(user);
-
-      return  ResponseEntity.ok(savedUser);
+    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO userRequestDTO){
+      return  ResponseEntity.ok(userService.createUser(userRequestDTO));
     }
 
 
