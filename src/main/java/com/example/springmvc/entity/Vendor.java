@@ -1,20 +1,18 @@
 package com.example.springmvc.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
-@Table(name = "vendors")
+@AllArgsConstructor
 @Builder
+@Table(name = "vendors")
 /// It lets you create object  using a clean, readable chain of methods instead of long, confusing constructor.
 public class Vendor {
 
