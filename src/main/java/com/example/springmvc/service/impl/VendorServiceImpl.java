@@ -5,7 +5,6 @@ import com.example.springmvc.dto.response.VendorResponseDTO;
 import com.example.springmvc.entity.Vendor;
 import com.example.springmvc.repository.VendorRepository;
 import com.example.springmvc.service.VendorService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
