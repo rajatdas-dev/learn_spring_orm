@@ -44,4 +44,18 @@ public class VendorController {
                         vendorResponseDTOS
                 ));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<VendorResponseDTO>> getVendorById(@PathVariable Long id){
+
+        VendorResponseDTO vendorResponseDTO = vendorService.getById(id);
+
+        return ResponseEntity.ok()
+                .body(
+                        ApiResponse.success(
+                                "Vendor got fetched",
+                                vendorResponseDTO
+                        )
+                );
+    }
 }

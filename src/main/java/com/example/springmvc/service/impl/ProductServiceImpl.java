@@ -75,6 +75,17 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
     }
 
+    @Override
+    public ProductResponseDTO getById(Long id) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "This product is not available"
+                ));
+        return modelMapperUtil.map(product, ProductResponseDTO.class);
+    }
+
     ProductResponseDTO toResponse(Product product){
 
         ProductResponseDTO productResponseDTO = new ProductResponseDTO();

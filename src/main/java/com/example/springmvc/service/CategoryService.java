@@ -10,4 +10,6 @@ public interface CategoryService {
     public CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO);
 
     public List<CategoryResponseDTO> getAllCategories();
+
+    public CategoryResponseDTO findById(Long id);
 }

@@ -40,4 +40,18 @@ public class CategoryController {
                         )
                 );
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<CategoryResponseDTO>> findById(@PathVariable Long id){
+
+        CategoryResponseDTO categoryResponseDTO = categoryService.findById(id);
+
+        return ResponseEntity.ok()
+                .body(
+                        ApiResponse.success(
+                                "Category Fetched",
+                                categoryResponseDTO
+                        )
+                );
+    }
 }

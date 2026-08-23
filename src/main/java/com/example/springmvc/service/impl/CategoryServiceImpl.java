@@ -3,6 +3,8 @@ package com.example.springmvc.service.impl;
 import com.example.springmvc.dto.request.CategoryRequestDTO;
 import com.example.springmvc.dto.response.CategoryResponseDTO;
 import com.example.springmvc.entity.Category;
+import com.example.springmvc.exception.ErrorCode;
+import com.example.springmvc.exception.ResourceNotFoundException;
 import com.example.springmvc.repository.CategoryRepository;
 import com.example.springmvc.service.CategoryService;
 import com.example.springmvc.util.mapper.ModelMapperUtil;
@@ -26,11 +28,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO) {
 
-        Category category = toEntity(categoryRequestDTO);
+        Category category = modelMapperUtil.map(categoryRequestDTO, Category.class);
 
-        categoryRepository.save(category);
+        Category savedCategory =  categoryRepository.save(category);
 
-        return  toResponseDTO(category);
+        return modelMapperUtil.map(savedCategory, CategoryResponseDTO.class);
     }
 
     @Override
@@ -43,21 +45,13 @@ public class CategoryServiceImpl implements CategoryService {
                 .toList();
     }
 
-    CategoryResponseDTO toResponseDTO(Category category){
+    @Override
+    public CategoryResponseDTO findById(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException(
+                        ErrorCode.CATEGORY_NOT_FOUND,
+                        " Category Not Found"));
 
-        CategoryResponseDTO categoryResponseDTO = new CategoryResponseDTO();
-
-        categoryResponseDTO.setId(category.getId());
-        categoryResponseDTO.setName(category.getName());
-
-        return  categoryResponseDTO;
-    }
-
-    Category toEntity(CategoryRequestDTO categoryRequestDTO){
-
-        Category category = new Category();
-        category.setName(categoryRequestDTO.getName());
-
-        return  category;
+        return modelMapperUtil.map(category, CategoryResponseDTO.class);
     }
 }
