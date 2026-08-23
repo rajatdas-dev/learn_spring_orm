@@ -11,9 +11,12 @@ import com.example.springmvc.repository.CategoryRepository;
 import com.example.springmvc.repository.ProductRepository;
 import com.example.springmvc.repository.VendorRepository;
 import com.example.springmvc.service.ProductService;
+import com.example.springmvc.util.mapper.ModelMapperUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -21,13 +24,14 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-
-
     @Autowired
     private VendorRepository vendorRepository;
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ModelMapperUtil modelMapperUtil;
 
     @Transactional
     @Override
@@ -59,6 +63,16 @@ public class ProductServiceImpl implements ProductService {
         Product savedProduct = productRepository.save(product);
 
         return toResponse(savedProduct);
+    }
+
+    @Override
+    public List<ProductResponseDTO> getAllProducts() {
+
+        List<Product> productList = productRepository.findAll();
+
+        return productList.stream()
+                .map(product -> modelMapperUtil.map(product, ProductResponseDTO.class))
+                .toList();
     }
 
     ProductResponseDTO toResponse(Product product){
