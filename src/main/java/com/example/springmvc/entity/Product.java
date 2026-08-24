@@ -46,7 +46,7 @@ public class Product {
     @NotNull
     private Category category;
 
-    @OneToMany(mappedBy = "product",)
+    @OneToMany(mappedBy = "product")
     @Builder.Default
     private List<ProductVariant> productVariantList = new ArrayList<>();
 }
