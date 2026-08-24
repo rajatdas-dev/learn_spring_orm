@@ -1,7 +1,5 @@
-package com.example.springmvc.dto.request;
+package com.example.springmvc.dto.request.product;
 
-import com.example.springmvc.entity.Category;
-import com.example.springmvc.entity.Vendor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

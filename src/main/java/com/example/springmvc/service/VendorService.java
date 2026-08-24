@@ -1,6 +1,6 @@
 package com.example.springmvc.service;
 
-import com.example.springmvc.dto.request.VendorRequestDTO;
+import com.example.springmvc.dto.request.vendor.VendorRequestDTO;
 import com.example.springmvc.dto.response.VendorResponseDTO;
 
 import java.util.List;
@@ -12,4 +12,6 @@ public interface VendorService {
     public List<VendorResponseDTO> getAllVendors();
 
     public VendorResponseDTO getById(Long id);
+
+    public VendorResponseDTO updateEmailById(Long id, String email);
 }

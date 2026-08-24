@@ -1,6 +1,7 @@
 package com.example.springmvc.controller;
 
-import com.example.springmvc.dto.request.ProductRequestDTO;
+import com.example.springmvc.dto.request.product.ProductRequestDTO;
+import com.example.springmvc.dto.request.product.ProductUpdateRequestDTO;
 import com.example.springmvc.dto.response.ProductResponseDTO;
 import com.example.springmvc.response.ApiResponse;
 import com.example.springmvc.service.ProductService;
@@ -59,6 +60,22 @@ public class ProductController {
                         ApiResponse.success(
                                 "Product got fetched",
                                 productResponseDTO
+                        )
+                );
+    }
+
+    @PutMapping("/{id}")
+    public  ResponseEntity<ApiResponse<ProductResponseDTO>> updateProductById(
+            @PathVariable Long id,
+            @RequestBody ProductUpdateRequestDTO productUpdateRequestDTO){
+
+        ProductResponseDTO responseDTO = productService.updateProductsById(id, productUpdateRequestDTO);
+
+        return ResponseEntity.ok()
+                .body(
+                        ApiResponse.success(
+                                "Product Updated Successfully",
+                                responseDTO
                         )
                 );
     }

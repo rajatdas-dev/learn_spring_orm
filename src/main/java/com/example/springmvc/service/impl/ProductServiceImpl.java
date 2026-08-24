@@ -1,6 +1,7 @@
 package com.example.springmvc.service.impl;
 
-import com.example.springmvc.dto.request.ProductRequestDTO;
+import com.example.springmvc.dto.request.product.ProductRequestDTO;
+import com.example.springmvc.dto.request.product.ProductUpdateRequestDTO;
 import com.example.springmvc.dto.response.ProductResponseDTO;
 import com.example.springmvc.entity.Category;
 import com.example.springmvc.entity.Product;
@@ -84,6 +85,24 @@ public class ProductServiceImpl implements ProductService {
                         "This product is not available"
                 ));
         return modelMapperUtil.map(product, ProductResponseDTO.class);
+    }
+
+    @Transactional
+    @Override
+    public ProductResponseDTO updateProductsById(Long id, ProductUpdateRequestDTO productUpdateRequestDTO) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "This product is not available"
+                ));
+
+        product.setName(productUpdateRequestDTO.getName());
+        product.setPrice(productUpdateRequestDTO.getPrice());
+        product.setStock(productUpdateRequestDTO.getStock());
+        productRepository.flush();
+
+        return  modelMapperUtil.map(product, ProductResponseDTO.class);
     }
 
     ProductResponseDTO toResponse(Product product){

@@ -1,6 +1,6 @@
 package com.example.springmvc.controller;
 
-import com.example.springmvc.dto.request.CategoryRequestDTO;
+import com.example.springmvc.dto.request.category.CategoryRequestDTO;
 import com.example.springmvc.dto.response.CategoryResponseDTO;
 import com.example.springmvc.response.ApiResponse;
 import com.example.springmvc.service.CategoryService;
