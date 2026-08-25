@@ -1,4 +1,4 @@
-package com.example.springmvc.dto.response;
+package com.example.springmvc.dto.response.vendor;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package com.example.springmvc.service;
 
 import com.example.springmvc.dto.request.vendor.VendorRequestDTO;
-import com.example.springmvc.dto.response.VendorResponseDTO;
+import com.example.springmvc.dto.response.vendor.VendorResponseDTO;
 
 import java.util.List;
 

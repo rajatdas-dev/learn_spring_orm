@@ -1,7 +1,7 @@
 package com.example.springmvc.service;
 
 import com.example.springmvc.dto.request.category.CategoryRequestDTO;
-import com.example.springmvc.dto.response.CategoryResponseDTO;
+import com.example.springmvc.dto.response.category.CategoryResponseDTO;
 
 import java.util.List;
 

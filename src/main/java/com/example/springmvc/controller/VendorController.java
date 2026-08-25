@@ -1,7 +1,7 @@
 package com.example.springmvc.controller;
 
 import com.example.springmvc.dto.request.vendor.VendorRequestDTO;
-import com.example.springmvc.dto.response.VendorResponseDTO;
+import com.example.springmvc.dto.response.vendor.VendorResponseDTO;
 import com.example.springmvc.response.ApiResponse;
 import com.example.springmvc.service.VendorService;
 import jakarta.validation.constraints.Email;

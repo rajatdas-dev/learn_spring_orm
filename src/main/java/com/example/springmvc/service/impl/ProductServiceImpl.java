@@ -2,14 +2,20 @@ package com.example.springmvc.service.impl;
 
 import com.example.springmvc.dto.request.product.ProductRequestDTO;
 import com.example.springmvc.dto.request.product.ProductUpdateRequestDTO;
-import com.example.springmvc.dto.response.ProductResponseDTO;
+import com.example.springmvc.dto.request.product.ProductVariantRequestDTO;
+import com.example.springmvc.dto.request.product.ProductVariantUpdateRequestDTO;
+import com.example.springmvc.dto.response.product.ProductResponseDTO;
+import com.example.springmvc.dto.response.product.ProductVariantResponseDTO;
 import com.example.springmvc.entity.Category;
 import com.example.springmvc.entity.Product;
+import com.example.springmvc.entity.ProductVariant;
 import com.example.springmvc.entity.Vendor;
 import com.example.springmvc.exception.ErrorCode;
+import com.example.springmvc.exception.ProductOutOfStockException;
 import com.example.springmvc.exception.ResourceNotFoundException;
 import com.example.springmvc.repository.CategoryRepository;
 import com.example.springmvc.repository.ProductRepository;
+import com.example.springmvc.repository.ProductVariantRepository;
 import com.example.springmvc.repository.VendorRepository;
 import com.example.springmvc.service.ProductService;
 import com.example.springmvc.util.mapper.ModelMapperUtil;
@@ -30,6 +36,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ProductVariantRepository productVariantRepository;
 
     @Autowired
     private ModelMapperUtil modelMapperUtil;
@@ -71,8 +80,12 @@ public class ProductServiceImpl implements ProductService {
 
         List<Product> productList = productRepository.findAll();
 
-        return productList.stream()
-                .map(product -> modelMapperUtil.map(product, ProductResponseDTO.class))
+//        return productList.stream()
+//                .map(product -> modelMapperUtil.map(product, ProductResponseDTO.class))
+//                .toList();
+
+        return  productList.stream()
+                .map(this::toResponse)
                 .toList();
     }
 
@@ -80,11 +93,10 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDTO getById(Long id) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException(
-                        ErrorCode.PRODUCT_NOT_FOUND,
+                .orElseThrow(()-> new ProductOutOfStockException(
                         "This product is not available"
                 ));
-        return modelMapperUtil.map(product, ProductResponseDTO.class);
+        return toResponse(product);
     }
 
     @Transactional
@@ -92,8 +104,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDTO updateProductsById(Long id, ProductUpdateRequestDTO productUpdateRequestDTO) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException(
-                        ErrorCode.PRODUCT_NOT_FOUND,
+                .orElseThrow(()-> new ProductOutOfStockException(
                         "This product is not available"
                 ));
 
@@ -102,7 +113,101 @@ public class ProductServiceImpl implements ProductService {
         product.setStock(productUpdateRequestDTO.getStock());
         productRepository.flush();
 
-        return  modelMapperUtil.map(product, ProductResponseDTO.class);
+        return  toResponse(product);
+    }
+
+    @Transactional
+    @Override
+    public ProductVariantResponseDTO createProductVariant(Long id, ProductVariantRequestDTO productVariantRequestDTO) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(()-> new ProductOutOfStockException(
+                        "Product Not found"
+                ));
+
+        if (productVariantRepository.existsByProductIdAndSku(
+                id,
+                productVariantRequestDTO.getSku()
+        )) {
+            throw new ResourceNotFoundException(
+                    ErrorCode.DUPLICATE_PRODUCT_VARIANT,
+                    "Product SKU already exists for this product"
+            );
+        }
+
+        ProductVariant productVariant = modelMapperUtil.map(productVariantRequestDTO, ProductVariant.class);
+
+        productVariant.setProduct(product);
+        product.getProductVariantList().add(productVariant);
+
+        ProductVariant savedProductVariant = productVariantRepository.save(productVariant);
+
+        return modelMapperUtil.map(savedProductVariant, ProductVariantResponseDTO.class);
+    }
+
+    @Override
+    public ProductVariantResponseDTO getProductVariantById(Long id) {
+
+        ProductVariant productVariant = productVariantRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException(
+                        ErrorCode.PRODUCT_VARIANT_NOT_FOUND,
+                        "This Product variant is not available"
+                ));
+
+        return modelMapperUtil.map(productVariant, ProductVariantResponseDTO.class);
+    }
+
+    @Override
+    public List<ProductVariantResponseDTO> getAllProductVariantsById(Long id) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(()-> new ProductOutOfStockException(
+                        "Product Not Found !!"
+                ));
+
+        List<ProductVariant> productVariantList = product.getProductVariantList();
+
+        List<ProductVariantResponseDTO> productVariantResponseDTOS = productVariantList.stream()
+                .map((variant)-> modelMapperUtil.map(variant, ProductVariantResponseDTO.class))
+                .toList();
+
+        return productVariantResponseDTOS;
+    }
+
+    @Transactional
+    @Override
+    public ProductVariantResponseDTO updateProductVariant(Long id, ProductVariantUpdateRequestDTO productVariantUpdateRequestDTO) {
+
+        ProductVariant productVariant = productVariantRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException(
+                        ErrorCode.PRODUCT_VARIANT_NOT_FOUND,
+                        "Product Variant Not Found !!"
+                ));
+
+        if(productVariantUpdateRequestDTO.getSku() != null){
+            productVariant.setSku(productVariantUpdateRequestDTO.getSku());
+        }
+
+        if(productVariantUpdateRequestDTO.getColor() != null){
+            productVariant.setColor(productVariantUpdateRequestDTO.getColor());
+        }
+
+        productVariant.setPrice(productVariantUpdateRequestDTO.getPrice());
+        productVariant.setSize(productVariantUpdateRequestDTO.getSize());
+
+        return modelMapperUtil.map(productVariant, ProductVariantResponseDTO.class);
+    }
+
+    @Override
+    public void deleteProductVariant(Long id) {
+
+        ProductVariant productVariant = productVariantRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException(
+                        ErrorCode.PRODUCT_VARIANT_NOT_FOUND,
+                        "Product Variant is not available"
+                ));
+
+        productVariantRepository.delete(productVariant);
     }
 
     ProductResponseDTO toResponse(Product product){
@@ -117,6 +222,20 @@ public class ProductServiceImpl implements ProductService {
         productResponseDTO.setStock(product.getStock());
         productResponseDTO.setCategoryId(product.getCategory().getId());
         productResponseDTO.setCategoryName(product.getCategory().getName());
+
+        List<ProductVariantResponseDTO> variants =
+                product.getProductVariantList()
+                        .stream()
+                        .map(variant ->
+                                modelMapperUtil.map(
+                                        variant,
+                                        ProductVariantResponseDTO.class
+                                )
+                        )
+                        .toList();
+
+        productResponseDTO.setProductVariants(variants);
+
 //        productResponseDTO.setProducts(List.of(product));
 
         return productResponseDTO;

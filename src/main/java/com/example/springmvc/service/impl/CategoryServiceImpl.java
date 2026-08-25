@@ -1,7 +1,7 @@
 package com.example.springmvc.service.impl;
 
 import com.example.springmvc.dto.request.category.CategoryRequestDTO;
-import com.example.springmvc.dto.response.CategoryResponseDTO;
+import com.example.springmvc.dto.response.category.CategoryResponseDTO;
 import com.example.springmvc.entity.Category;
 import com.example.springmvc.exception.ErrorCode;
 import com.example.springmvc.exception.ResourceNotFoundException;

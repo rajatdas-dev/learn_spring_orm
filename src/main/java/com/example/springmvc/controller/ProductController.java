@@ -2,7 +2,11 @@ package com.example.springmvc.controller;
 
 import com.example.springmvc.dto.request.product.ProductRequestDTO;
 import com.example.springmvc.dto.request.product.ProductUpdateRequestDTO;
-import com.example.springmvc.dto.response.ProductResponseDTO;
+import com.example.springmvc.dto.request.product.ProductVariantRequestDTO;
+import com.example.springmvc.dto.request.product.ProductVariantUpdateRequestDTO;
+import com.example.springmvc.dto.response.product.ProductResponseDTO;
+import com.example.springmvc.dto.response.product.ProductVariantResponseDTO;
+import com.example.springmvc.entity.ProductVariant;
 import com.example.springmvc.response.ApiResponse;
 import com.example.springmvc.service.ProductService;
 import jakarta.validation.Valid;
@@ -78,5 +82,78 @@ public class ProductController {
                                 responseDTO
                         )
                 );
+    }
+
+    @PostMapping("/{productId}/variants")
+    public ResponseEntity<ApiResponse<ProductVariantResponseDTO>> createProductVariant(
+            @PathVariable("productId") Long id,
+            @RequestBody ProductVariantRequestDTO productVariantRequestDTO
+            ){
+
+        ProductVariantResponseDTO productVariantResponseDTO = productService.createProductVariant(id,productVariantRequestDTO);
+
+        return ResponseEntity.ok()
+                .body(
+                        ApiResponse.success(
+                                "Product Variant created successfully",
+                                productVariantResponseDTO
+                        )
+                );
+    }
+
+    @GetMapping("/{productId}/variants")
+    public ResponseEntity<ApiResponse<List<ProductVariantResponseDTO>>> getAllProductVariantsById(
+            @PathVariable("productId") Long id
+    ){
+        List<ProductVariantResponseDTO> productVariantResponseDTOS = productService.getAllProductVariantsById(id);
+
+        return  ResponseEntity.ok()
+                .body(
+                        ApiResponse.success(
+                                "Product Variants are successfully fetched",
+                                productVariantResponseDTOS
+                        )
+                );
+    }
+
+    @GetMapping("/variants/{variantId}")
+    public ResponseEntity<ApiResponse<ProductVariantResponseDTO>> getProductVariantById(
+            @PathVariable("variantId") Long id
+    ){
+        ProductVariantResponseDTO productVariantResponseDTO = productService.getProductVariantById(id);
+
+        return ResponseEntity.ok()
+                .body(
+                        ApiResponse.success(
+                                "Product Variant got successfully fetched !!",
+                                productVariantResponseDTO
+                        )
+                );
+    }
+
+    @PutMapping("/variants/{variantId}")
+    public ResponseEntity<ApiResponse<ProductVariantResponseDTO>> updateProductVariant(
+            @PathVariable("variantId") Long id,
+            @RequestBody ProductVariantUpdateRequestDTO productVariantUpdateRequestDTO
+            ){
+
+        ProductVariantResponseDTO productVariantResponseDTO =
+                productService.updateProductVariant(id, productVariantUpdateRequestDTO);
+
+        return ResponseEntity.ok()
+                .body(
+                        ApiResponse.success(
+                                "Product Variant got successfully Updated !!",
+                                productVariantResponseDTO
+                        )
+                );
+    }
+
+    @DeleteMapping("/variants/{variantId}")
+    public ResponseEntity<ApiResponse<Void>> deleteProductVariant(@PathVariable("variantId") Long id){
+        productService.deleteProductVariant(id);
+
+        return ResponseEntity.ok()
+                .body(ApiResponse.success("Product Variant got successfully deleted"));
     }
 }

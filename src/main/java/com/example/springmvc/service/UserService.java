@@ -1,7 +1,7 @@
 package com.example.springmvc.service;
 
 import com.example.springmvc.dto.request.user.UserRequestDTO;
-import com.example.springmvc.dto.response.UserResponseDTO;
+import com.example.springmvc.dto.response.user.UserResponseDTO;
 
 public interface UserService {
 

@@ -1,7 +1,7 @@
 package com.example.springmvc.controller;
 
 import com.example.springmvc.dto.request.user.UserRequestDTO;
-import com.example.springmvc.dto.response.UserResponseDTO;
+import com.example.springmvc.dto.response.user.UserResponseDTO;
 import com.example.springmvc.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

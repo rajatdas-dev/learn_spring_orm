@@ -1,7 +1,7 @@
 package com.example.springmvc.controller;
 
 import com.example.springmvc.dto.request.category.CategoryRequestDTO;
-import com.example.springmvc.dto.response.CategoryResponseDTO;
+import com.example.springmvc.dto.response.category.CategoryResponseDTO;
 import com.example.springmvc.response.ApiResponse;
 import com.example.springmvc.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
