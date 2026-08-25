@@ -49,4 +49,11 @@ public class Product {
     @OneToMany(mappedBy = "product")
     @Builder.Default
     private List<ProductVariant> productVariantList = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "product",
+            cascade = CascadeType.ALL,
+             orphanRemoval = true)
+    @Builder.Default
+    private List<ProductImage> productImageList = new ArrayList<>();
 }
