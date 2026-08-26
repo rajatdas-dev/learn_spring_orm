@@ -56,4 +56,14 @@ public class Product {
              orphanRemoval = true)
     @Builder.Default
     private List<ProductImage> productImageList = new ArrayList<>();
+
+    public void addImage(ProductImage image) {
+        productImageList.add(image);
+        image.setProduct(this);
+    }
+
+    public void removeImage(ProductImage image) {
+        productImageList.remove(image);
+        image.setProduct(null);
+    }
 }

@@ -42,4 +42,8 @@ public class ProductVariant {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+
+    @OneToOne(mappedBy = "variant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Inventory inventory;
 }
