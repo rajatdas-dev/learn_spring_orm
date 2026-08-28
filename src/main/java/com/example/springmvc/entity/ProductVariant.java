@@ -43,7 +43,6 @@ public class ProductVariant {
     @JoinColumn(name = "product_id")
     private Product product;
 
-
-    @OneToOne(mappedBy = "variant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Inventory inventory;
 }

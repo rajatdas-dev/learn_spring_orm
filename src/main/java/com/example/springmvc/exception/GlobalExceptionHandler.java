@@ -1,6 +1,7 @@
 package com.example.springmvc.exception;
 import com.example.springmvc.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.catalina.connector.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ProductOutOfStockException.class)
     public ResponseEntity<ErrorResponse> handleProductOutOfStock(
             ProductOutOfStockException exception,
+            HttpServletRequest request
+    ){
+        return  buildResponse(
+                exception.getStatus(),
+                exception.getErrorCode(),
+                exception.getMessage(),
+                request
+        );
+    }
+
+    @ExceptionHandler(InventoryAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleInventoryAlreadyExists(
+            InventoryAlreadyExistsException exception,
             HttpServletRequest request
     ){
         return  buildResponse(

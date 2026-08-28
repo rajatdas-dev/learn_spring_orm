@@ -22,4 +22,6 @@ public enum ErrorCode {
 
     ORDER_NOT_FOUND,
     ORDER_STATE_ERROR,
+    INVENTORY_NOT_FOUND,
+    INVENTORY_ALREADY_EXISTS,
 }
