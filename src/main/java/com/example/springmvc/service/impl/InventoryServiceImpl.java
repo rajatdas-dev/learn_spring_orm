@@ -3,12 +3,10 @@ package com.example.springmvc.service.impl;
 import com.example.springmvc.dto.request.inventory.InventoryRequestDTO;
 import com.example.springmvc.dto.response.inventory.InventoryResponseDTO;
 import com.example.springmvc.entity.Inventory;
-import com.example.springmvc.entity.ProductVariant;
 import com.example.springmvc.exception.ErrorCode;
 import com.example.springmvc.exception.InventoryAlreadyExistsException;
 import com.example.springmvc.exception.ResourceNotFoundException;
 import com.example.springmvc.repository.InventoryRepository;
-import com.example.springmvc.repository.ProductRepository;
 import com.example.springmvc.service.InventoryService;
 import com.example.springmvc.util.mapper.ModelMapperUtil;
 import jakarta.transaction.Transactional;
@@ -20,12 +18,6 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Autowired
     private InventoryRepository inventoryRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private ProductServiceImpl productService;
 
     @Autowired
     private ModelMapperUtil modelMapperUtil;
@@ -93,6 +85,4 @@ public class InventoryServiceImpl implements InventoryService {
             throw new InventoryAlreadyExistsException("Inventory Already Exists");
         }
     }
-
-
 }
