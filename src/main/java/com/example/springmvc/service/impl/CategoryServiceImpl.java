@@ -28,7 +28,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO) {
 
-        Category category = modelMapperUtil.map(categoryRequestDTO, Category.class);
+        Category category = new Category();
+
+        category.setName(categoryRequestDTO.getName());
+        category.setDescription(categoryRequestDTO.getDescription());
 
         Category savedCategory =  categoryRepository.save(category);
 
@@ -54,4 +57,54 @@ public class CategoryServiceImpl implements CategoryService {
 
         return modelMapperUtil.map(category, CategoryResponseDTO.class);
     }
+
+    @Transactional
+    @Override
+    public CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO requestDTO) {
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException(
+                        ErrorCode.CATEGORY_NOT_FOUND,
+                        "Category Not Found"
+                ));
+
+        category.setName(requestDTO.getName());
+        category.setDescription(requestDTO.getDescription());
+
+        return modelMapperUtil.map(category, CategoryResponseDTO.class);
+    }
+
+    @Transactional
+    @Override
+    public void deleteCategory(Long id) {
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException(
+                        ErrorCode.CATEGORY_NOT_FOUND,
+                        "Category Not Found !!"
+                ));
+
+        categoryRepository.delete(category);
+    }
+
+    @Transactional
+    @Override
+    public List<CategoryResponseDTO> getChildCategories(Long id) {
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException(
+                        ErrorCode.CATEGORY_NOT_FOUND,
+                        "Category Not found !!"
+                ));
+
+        List<Category> categoryChildList = category.getChildren();
+
+        List<CategoryResponseDTO> categoryResponseDTOS = categoryChildList.stream()
+                .map((childCategory)-> modelMapperUtil.map(childCategory, CategoryResponseDTO.class))
+                .toList();
+
+        return categoryResponseDTOS;
+    }
+
+
 }

@@ -29,9 +29,7 @@ public class CategoryController {
 
     @GetMapping("/get-all")
     public ResponseEntity<ApiResponse<List<CategoryResponseDTO>>> getAllCategories(){
-
         List<CategoryResponseDTO> categoryResponseDTOList = categoryService.getAllCategories();
-
         return ResponseEntity.ok()
                 .body(
                         ApiResponse.success(
@@ -43,14 +41,54 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<CategoryResponseDTO>> findById(@PathVariable Long id){
-
         CategoryResponseDTO categoryResponseDTO = categoryService.findById(id);
-
         return ResponseEntity.ok()
                 .body(
                         ApiResponse.success(
                                 "Category Fetched",
                                 categoryResponseDTO
+                        )
+                );
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<CategoryResponseDTO>> updateCategory(
+            @PathVariable Long id,
+            @RequestBody CategoryRequestDTO requestDTO){
+        CategoryResponseDTO categoryResponseDTO = categoryService.updateCategory(id, requestDTO);
+        return  ResponseEntity.ok()
+                .body(
+                        ApiResponse.success(
+                                "Category got successfully updated",
+                                categoryResponseDTO
+                        )
+                );
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable Long id){
+
+        categoryService.deleteCategory(id);
+
+        return ResponseEntity.ok()
+                .body(
+                        ApiResponse.success(
+                                "Category deleted"
+                        )
+                );
+    }
+
+    @GetMapping("/{id}/children")
+    public ResponseEntity<ApiResponse<List<CategoryResponseDTO>>> getChildCategories(
+            @PathVariable Long id){
+
+        List<CategoryResponseDTO> categoryResponseDTOList = categoryService.getChildCategories(id);
+
+        return  ResponseEntity.ok()
+                .body(
+                        ApiResponse.success(
+                                "Child Category List Fetched !!",
+                                categoryResponseDTOList
                         )
                 );
     }

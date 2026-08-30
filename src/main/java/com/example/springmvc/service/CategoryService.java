@@ -12,4 +12,11 @@ public interface CategoryService {
     public List<CategoryResponseDTO> getAllCategories();
 
     public CategoryResponseDTO findById(Long id);
+
+    public CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO requestDTO);
+
+    public void deleteCategory(Long id);
+
+    public List<CategoryResponseDTO> getChildCategories(Long id);
 }
+

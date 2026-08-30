@@ -14,6 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "products", indexes = {
+        @Index(name = "idx_product_name", columnList = "name"),
+        @Index(name = "idx_product_price", columnList = "price")
+})
 public class Product {
 
     @Id

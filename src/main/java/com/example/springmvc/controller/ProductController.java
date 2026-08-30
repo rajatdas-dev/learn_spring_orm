@@ -54,6 +54,26 @@ public class ProductController {
                 );
     }
 
+    @GetMapping("/page")
+    public ResponseEntity<ApiResponse<org.springframework.data.domain.Page<ProductResponseDTO>>> getProductsPaged(
+            @org.springframework.data.web.PageableDefault(page = 0, size = 10, sort = "name") org.springframework.data.domain.Pageable pageable) {
+        org.springframework.data.domain.Page<ProductResponseDTO> paged = productService.getProductsPaged(pageable);
+        return ResponseEntity.ok(ApiResponse.success("Paged products fetched successfully", paged));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<org.springframework.data.domain.Page<ProductResponseDTO>>> searchProducts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long vendorId,
+            @RequestParam(required = false) java.math.BigDecimal minPrice,
+            @RequestParam(required = false) java.math.BigDecimal maxPrice,
+            @RequestParam(required = false) Boolean inStock,
+            @org.springframework.data.web.PageableDefault(page = 0, size = 10) org.springframework.data.domain.Pageable pageable) {
+        org.springframework.data.domain.Page<ProductResponseDTO> results = productService.searchProducts(keyword, categoryId, vendorId, minPrice, maxPrice, inStock, pageable);
+        return ResponseEntity.ok(ApiResponse.success("Search results fetched successfully", results));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ProductResponseDTO>> getProductById(@PathVariable Long id){
 
@@ -66,6 +86,33 @@ public class ProductController {
                                 productResponseDTO
                         )
                 );
+    }
+
+    @GetMapping("/{id}/details")
+    public ResponseEntity<ApiResponse<ProductResponseDTO>> getProductWithDetails(@PathVariable Long id) {
+        ProductResponseDTO productResponseDTO = productService.getProductWithDetails(id);
+        return ResponseEntity.ok(ApiResponse.success("Product with details fetched (JOIN FETCH)", productResponseDTO));
+    }
+
+    @GetMapping("/{id}/async")
+    public java.util.concurrent.CompletableFuture<ResponseEntity<ApiResponse<ProductResponseDTO>>> getProductAsync(@PathVariable Long id) {
+        return productService.getProductAsync(id)
+                .thenApply(dto -> ResponseEntity.ok(ApiResponse.success("Product fetched asynchronously via CompletableFuture", dto)));
+    }
+
+    @GetMapping("/price-range")
+    public ResponseEntity<ApiResponse<List<ProductResponseDTO>>> getProductsByPriceRange(
+            @RequestParam java.math.BigDecimal minPrice,
+            @RequestParam java.math.BigDecimal maxPrice) {
+        List<ProductResponseDTO> products = productService.getProductsByPriceRange(minPrice, maxPrice);
+        return ResponseEntity.ok(ApiResponse.success("Products by price range fetched", products));
+    }
+
+    @GetMapping("/low-stock")
+    public ResponseEntity<ApiResponse<List<ProductResponseDTO>>> getLowStockProducts(
+            @RequestParam(defaultValue = "5") Integer threshold) {
+        List<ProductResponseDTO> products = productService.getLowStockProducts(threshold);
+        return ResponseEntity.ok(ApiResponse.success("Low stock products fetched (Native Query)", products));
     }
 
     @PutMapping("/{id}")

@@ -80,23 +80,83 @@ public class ProductServiceImpl implements ProductService {
 
         List<Product> productList = productRepository.findAll();
 
-//        return productList.stream()
-//                .map(product -> modelMapperUtil.map(product, ProductResponseDTO.class))
-//                .toList();
-
-        return  productList.stream()
+        return productList.stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    @Override
+    public org.springframework.data.domain.Page<ProductResponseDTO> getProductsPaged(org.springframework.data.domain.Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(this::toResponse);
+    }
+
+    @Override
+    public org.springframework.data.domain.Page<ProductResponseDTO> searchProducts(
+            String keyword,
+            Long categoryId,
+            Long vendorId,
+            java.math.BigDecimal minPrice,
+            java.math.BigDecimal maxPrice,
+            Boolean inStock,
+            org.springframework.data.domain.Pageable pageable
+    ) {
+        org.springframework.data.jpa.domain.Specification<Product> spec = org.springframework.data.jpa.domain.Specification
+                .where(com.example.springmvc.specification.ProductSpecification.hasKeyword(keyword))
+                .and(com.example.springmvc.specification.ProductSpecification.hasCategory(categoryId))
+                .and(com.example.springmvc.specification.ProductSpecification.hasVendor(vendorId))
+                .and(com.example.springmvc.specification.ProductSpecification.priceBetween(minPrice, maxPrice))
+                .and(com.example.springmvc.specification.ProductSpecification.inStockOnly(inStock));
+
+        return productRepository.findAll(spec, pageable)
+                .map(this::toResponse);
     }
 
     @Override
     public ProductResponseDTO getById(Long id) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(()-> new ProductOutOfStockException(
-                        "This product is not available"
+                .orElseThrow(()-> new ResourceNotFoundException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with id: " + id
                 ));
         return toResponse(product);
+    }
+
+    @Override
+    public ProductResponseDTO getProductWithDetails(Long id) {
+        Product product = productRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with id: " + id
+                ));
+        return toResponse(product);
+    }
+
+    @Override
+    @org.springframework.scheduling.annotation.Async("shopsphereTaskExecutor")
+    public java.util.concurrent.CompletableFuture<ProductResponseDTO> getProductAsync(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with id: " + id
+                ));
+        ProductResponseDTO response = toResponse(product);
+        return java.util.concurrent.CompletableFuture.completedFuture(response);
+    }
+
+    @Override
+    public List<ProductResponseDTO> getProductsByPriceRange(java.math.BigDecimal minPrice, java.math.BigDecimal maxPrice) {
+        return productRepository.findByPriceBetween(minPrice, maxPrice).stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<ProductResponseDTO> getLowStockProducts(Integer threshold) {
+        return productRepository.findLowStockProductsNative(threshold).stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     @Transactional
@@ -104,8 +164,9 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDTO updateProductsById(Long id, ProductUpdateRequestDTO productUpdateRequestDTO) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(()-> new ProductOutOfStockException(
-                        "This product is not available"
+                .orElseThrow(()-> new ResourceNotFoundException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with id: " + id
                 ));
 
         product.setName(productUpdateRequestDTO.getName());
@@ -121,8 +182,9 @@ public class ProductServiceImpl implements ProductService {
     public ProductVariantResponseDTO createProductVariant(Long id, ProductVariantRequestDTO productVariantRequestDTO) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(()-> new ProductOutOfStockException(
-                        "Product Not found"
+                .orElseThrow(()-> new ResourceNotFoundException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with id: " + id
                 ));
 
         if (productVariantRepository.existsByProductIdAndSku(
@@ -161,8 +223,9 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductVariantResponseDTO> getAllProductVariantsById(Long id) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(()-> new ProductOutOfStockException(
-                        "Product Not Found !!"
+                .orElseThrow(()-> new ResourceNotFoundException(
+                        ErrorCode.PRODUCT_NOT_FOUND,
+                        "Product not found with id: " + id
                 ));
 
         List<ProductVariant> productVariantList = product.getProductVariantList();

@@ -16,7 +16,7 @@ public class ErrorResponse {
     private ErrorCode errorCode;
     private String message;
     private String path;
-    private LocalDateTime timeStamp;
+    private LocalDateTime timestamp;
     private String traceId;
 
 }

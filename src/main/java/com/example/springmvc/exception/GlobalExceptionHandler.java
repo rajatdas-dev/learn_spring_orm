@@ -1,9 +1,9 @@
 package com.example.springmvc.exception;
 import com.example.springmvc.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.catalina.connector.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -120,7 +120,7 @@ public class GlobalExceptionHandler {
         return  buildResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 ErrorCode.INTERNAL_SERVER_ERROR,
-                "An unexpected error occured",
+                "An unexpected error occurred",
                 request
         );
     }
@@ -145,6 +145,7 @@ public class GlobalExceptionHandler {
             String message,
             HttpServletRequest request
     ){
+        String traceId = MDC.get("traceId");
         ErrorResponse response = new ErrorResponse(
                 false,
                 status.value(),
@@ -152,7 +153,7 @@ public class GlobalExceptionHandler {
                 message,
                 request.getRequestURI(),
                 LocalDateTime.now(),
-                null
+                traceId
         );
 
         return  ResponseEntity.status(status).body(response);

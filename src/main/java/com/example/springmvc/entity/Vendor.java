@@ -29,9 +29,16 @@ public class Vendor {
 
     @OneToMany(mappedBy = "vendor")
     @Builder.Default
-    ///  If you skip a field while using a Builder, Java usually forces it to be null or 0 - even if you
-    /// gave it a default value in your code.
-    ///  @Builder.Default forces the builder to respect your default value.
     private List<Product> products = new ArrayList<>();
+
+    @OneToOne(mappedBy = "vendor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private VendorAddress address;
+
+    public void setAddress(VendorAddress address) {
+        this.address = address;
+        if (address != null) {
+            address.setVendor(this);
+        }
+    }
 
 }

@@ -6,7 +6,9 @@ import com.example.springmvc.entity.Inventory;
 import com.example.springmvc.exception.ErrorCode;
 import com.example.springmvc.exception.InventoryAlreadyExistsException;
 import com.example.springmvc.exception.ResourceNotFoundException;
+import com.example.springmvc.entity.ProductVariant;
 import com.example.springmvc.repository.InventoryRepository;
+import com.example.springmvc.repository.ProductVariantRepository;
 import com.example.springmvc.service.InventoryService;
 import com.example.springmvc.util.mapper.ModelMapperUtil;
 import jakarta.transaction.Transactional;
@@ -22,6 +24,9 @@ public class InventoryServiceImpl implements InventoryService {
     @Autowired
     private ModelMapperUtil modelMapperUtil;
 
+
+    @Autowired
+    private ProductVariantRepository productVariantRepository;
 
     @Override
     public InventoryResponseDTO getInventories(Long id) {
@@ -44,20 +49,27 @@ public class InventoryServiceImpl implements InventoryService {
             Long variantId,
             InventoryRequestDTO inventoryRequestDTO
     ) {
-
-        validateInventoryDoesNotExist(variantId);
-
         Inventory inventory = inventoryRepository
                 .findByProductVariantId(variantId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Inventory not found for variant: " + variantId
-                        )
-                );
+                .orElseGet(() -> {
+                    com.example.springmvc.entity.ProductVariant variant = productVariantRepository.findById(variantId)
+                            .orElseThrow(() -> new ResourceNotFoundException(
+                                    ErrorCode.PRODUCT_VARIANT_NOT_FOUND,
+                                    "Product variant not found with id: " + variantId
+                            ));
+                    Inventory newInventory = new Inventory();
+                    newInventory.setProductVariant(variant);
+                    newInventory.setQuantity(0);
+                    newInventory.setReservedQuantity(0);
+                    return newInventory;
+                });
 
         inventory.setQuantity(
                 inventory.getQuantity() + inventoryRequestDTO.getQuantity()
         );
+        if (inventoryRequestDTO.getReservedQuantity() != null) {
+            inventory.setReservedQuantity(inventoryRequestDTO.getReservedQuantity());
+        }
 
         Inventory savedInventory = inventoryRepository.save(inventory);
 

@@ -1,12 +1,20 @@
 package com.example.springmvc.dto.request.category;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class CategoryRequestDTO {
+
+    @NotBlank(message = "name is required")
     private String name;
+
+    private String description;
+
+    @Builder.Default
+    private boolean active = true;
 }
